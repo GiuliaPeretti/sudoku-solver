@@ -32,28 +32,26 @@ def find_empty(grid):
         for y in range(0,9):
             if (grid[y][x]==0):
                 return(x,y)
-    return (-1,-1)
+    return None
 
 def solve(grid):
     
-    # print("solve")
-    x,y=find_empty(grid)
-    # print("vuoto:"+str(x)+" "+str(y))
-    if(x==-1):
-        # print("nessun vuoto trovato")
+    find = find_empty(grid)
+    if not find:
         return True
+    else:
+        x, y = find
     
     for i in range(1,10):
         if(is_possible(grid,x,y,i)):
-            # print(str(i)+" possibile")
+            print(str(i)+" possibile")
             grid[y][x] = i
             if solve(grid):
-                # print("finito")
+                print("finito")
                 return True
             
             grid[y][x] = 0
-            solve(grid)
-    # print("return false " +str(x)+" "+str(y))
+    print("return false " +str(x)+" "+str(y))
     return False
 
 def print_grid(grid):

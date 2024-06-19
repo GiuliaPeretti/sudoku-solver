@@ -1,0 +1,5 @@
+import pygame
+
+SCREEN_WIDTH=600
+SCREEN_HEIGHT=600
+flags=(pygame.HWSURFACE | pygame.DOUBLEBUF)
