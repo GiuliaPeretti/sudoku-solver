@@ -1,5 +1,6 @@
 import numpy as np
 
+
 grid=([[1,0,7,0,0,6,4,5,0],
       [0,2,5,3,4,0,0,0,8],
       [0,6,0,0,0,1,0,7,0],
@@ -10,9 +11,7 @@ grid=([[1,0,7,0,0,6,4,5,0],
       [0,0,8,0,0,0,0,0,0],
       [0,4,0,0,7,8,5,9,1]])
 
-def is_possible(x, y, n):
-    global grid
-    print(np.array(grid))
+def is_possible(grid, x, y, n):
     for i in range (0,9):
         if (i!=x and grid[y][i] == n):
             return False
@@ -36,23 +35,41 @@ def find_empty(grid):
     return (-1,-1)
 
 def solve(grid):
+    
+    # print("solve")
     x,y=find_empty(grid)
+    # print("vuoto:"+str(x)+" "+str(y))
     if(x==-1):
+        # print("nessun vuoto trovato")
         return True
     
-
+    for i in range(1,10):
+        if(is_possible(grid,x,y,i)):
+            # print(str(i)+" possibile")
+            grid[y][x] = i
+            if solve(grid):
+                # print("finito")
+                return True
+            
+            grid[y][x] = 0
+            solve(grid)
+    # print("return false " +str(x)+" "+str(y))
+    return False
 
 def print_grid(grid):
     for i in range (0,9):
-        if ((i+1)%3==0 and i!=8):
+        if ((i)%3==0 and i!=0):
             print("------+-------+------")
         for j in range (0,9):
             print(grid[i][j], end=' ')
             if ((j+1)%3==0 and j!=8):
                 print("|", end=' ')
         print()    
+    print() 
         
             
 
     
-print(print_grid(grid))
+print_grid(grid)
+solve(grid)
+print_grid(grid)
