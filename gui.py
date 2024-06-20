@@ -2,7 +2,6 @@ import pygame
 import numpy as np
 import sys
 from settings import *
-from SudokuGrid import *
 from sudoku_solver import *
 
 def draw_background():
@@ -31,12 +30,24 @@ def draw_numbers(grid_width):
         for col in range(0,9):
             output=grid[row][col]
             if(output!=0):
-                color=(0,0,0) if (grid_black[row][col]==1) else (0,0,255)
+                if (grid_black[row][col]==1):
+                    color=(0,0,0)
+                elif (grid_solved[row][col]!=grid[row][col]):
+                    color=(255,0,0)
+                else:
+                    color=(0,0,255)
                 n_text=font_bold.render(str(output), True, color)
                 screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+24, col*(grid_width//9)+18))
 
 def draw_number(row, col, n):
-    color=(0,0,0) if (grid_black[row][col]==1) else (0,0,255)
+    if (grid_black[row][col]==1):
+        color=(0,0,0)
+    elif (grid_solved[row][col]!=n):
+        print(grid_solved[row][col])
+        print(n)
+        color=(255,0,0)
+    else:
+        color=(0,0,255)
     if(n!=0):
         n_text=font_bold.render(str(n), True, color)
         screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
@@ -120,6 +131,8 @@ font_bold = pygame.font.SysFont('arial', 25)
 font = pygame.font.SysFont('arial', 20)
 
 grid, grid_black, grid_solved = init_grid()
+
+print_grid(grid_solved)
 
 
 run  = True
