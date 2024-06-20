@@ -21,13 +21,15 @@ def draw_grid():
     return(w)
 
 def colora_cella(xy):
+    font = pygame.font.Font('freesansbold.ttf', 32)
     x=xy[0]
     y=xy[1]
     if (x<=w and y<=w):
-        print(x+" "+y)
         x=x//(w/9)
         y=y//(w/9)
-        pygame.draw.rect(screen, (255,0,0), pygame.Rect(x, y, x+(w/9), y+(w/9)))
+        print(str(x)+" "+str(y))
+        pygame.draw.rect(screen, (255,0,0), pygame.Rect(x*(w/9), y*(w/9), (x+1)*(w/9), (y+1)*(w/9)))
+        print(str(x*(w/9))+" " + str(y*(w/9)) + " " + str((x+1)*(w/9)) + " " + str((y+1)*(w/9)))
 
 pygame.init()
 
@@ -38,6 +40,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT), flags, vsync=1)
 
 
 run  = True
+w=draw_background()
 while run:
 
     for event in pygame.event.get():
@@ -45,7 +48,7 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             colora_cella(pygame.mouse.get_pos())
-    w=draw_background()
+
     pygame.display.flip()
     clock.tick(30)
     
