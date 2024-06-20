@@ -11,6 +11,15 @@ class SudokuGrid:
                     [0,0,1,0,9,3,2,0,0],
                     [0,0,8,0,0,0,0,0,0],
                     [0,4,0,0,7,8,5,9,1]])
+        self.bold=([[1,0,1,0,0,1,1,1,0],
+                    [0,1,1,1,1,0,0,0,1],
+                    [0,1,0,0,0,1,0,1,0],
+                    [0,1,1,0,0,0,0,1,1],
+                    [1,1,0,0,0,1,1,0,0],
+                    [0,0,0,1,0,1,0,0,1],
+                    [0,0,1,0,1,1,1,0,0],
+                    [0,0,1,0,0,0,0,0,0],
+                    [0,1,0,0,1,1,1,1,1]])
 
     def print_grid(self):
         for i in range (0,9):
@@ -24,8 +33,11 @@ class SudokuGrid:
         print() 
     
     def set_number(self, row, col, n):
-        self.grid[col][row]=n
+        self.grid[row][col]=n
 
     def get_pos(self,row,col):
         return(self.grid[row][col])
+    
+    def get_bold(self, row, col):
+        return(self.bold[row][col])
         

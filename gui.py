@@ -30,14 +30,19 @@ def draw_numbers(grid_width):
         for col in range(0,9):
             output=grid.get_pos(row,col)
             if(output!=0):
-                n_text=font.render(str(output), True, (0,0,0))
+                if(grid.get_bold(row,col)==1):
+                    current_font=font_bold
+                else:
+                    current_font=font
+                n_text=current_font.render(str(output), True, (0,0,0))
                 screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
 
-def draw_number(grid_widths, row, col):
-    output=grid.get_pos(row,col)
-    if(output!=0):
-        n_text=font.render(str(output), True, (0,0,0))
+def draw_number(row, col, n, input):
+    current_font=font_bold if (grid.get_bold(row,col)==1) else font
+    if(n!=0):
+        n_text=current_font.render(str(n), True, (0,0,0))
         screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
+
 
 def set_cella(xy, prev_xy):
     _=draw_background()
@@ -45,10 +50,6 @@ def set_cella(xy, prev_xy):
     y=xy[1]
     x= int(x//(grid_width/9))
     y = int(y//(grid_width/9))
-    print("xy ")
-    print(xy)
-    print("prev")
-    print(prev_xy)
     # if (x<=w and y<=w):
     #     x=x//(w/9)
     #     y=y//(w/9)
@@ -86,7 +87,7 @@ def set_cella(xy, prev_xy):
 
 
         pygame.draw.rect(screen, (100,100,200), pygame.Rect((grid_width/9)*x+offset1, (grid_width/9)*y+offset2, (grid_width/9)+(x+1)-offset3, (grid_width/9)+(y+1)-offset4 ))
-        draw_number(grid_width,x,y)
+        draw_number(x,y, grid.get_pos(x,y), False)
         # print(grid_width)
         # print((grid_width/9)*x+12)
         # print((grid_width/9)*y+12)
@@ -102,6 +103,7 @@ pygame.init()
 clock=pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT), flags, vsync=1)
 pygame.font.init()
+font_bold = pygame.font.SysFont('arial', 25)
 font = pygame.font.SysFont('arial', 20)
 
 grid = SudokuGrid()
@@ -110,6 +112,7 @@ grid = SudokuGrid()
 run  = True
 grid_width=draw_background()
 selected_cell=(-1,-1)
+
 while run:
 
     for event in pygame.event.get():
@@ -117,21 +120,23 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             selected_cell=set_cella(pygame.mouse.get_pos(),selected_cell)
-        if (event.type == pygame.KEYDOWN and (event.key==pygame.K_0 or 
-                                              event.key==pygame.K_1 or 
-                                              event.key==pygame.K_2 or 
-                                              event.key==pygame.K_3 or
-                                              event.key==pygame.K_4 or
-                                              event.key==pygame.K_5 or
-                                              event.key==pygame.K_6 or
-                                              event.key==pygame.K_7 or
-                                              event.key==pygame.K_8 or
-                                              event.key==pygame.K_9 or
+        if (event.type == pygame.KEYDOWN):
+            for i in range(len(INPUTS)):
+                if (event.key==INPUTS[i]):
+                    if(selected_cell[0]!=-1 and grid.get_pos(selected_cell[1],selected_cell[0])==0):
+                        draw_number(selected_cell[0],selected_cell[1], i+1, True)
+                        grid.set_number(selected_cell[0],selected_cell[1],i+1)
 
-                                              )):
+
+
+
+
+
 
     pygame.display.flip()
     clock.tick(30)
     
 
 pygame.quit()
+
+#TODO: quando selezioni celle consecutivamente non scrive
