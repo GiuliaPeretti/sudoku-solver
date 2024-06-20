@@ -3,6 +3,7 @@ import numpy as np
 import sys
 from settings import *
 from SudokuGrid import *
+from sudoku_solver import *
 
 def draw_background():
     screen.fill((200,200,200))
@@ -28,18 +29,17 @@ def draw_buttons():
 def draw_numbers(grid_width):
     for row in range (0,9):
         for col in range(0,9):
-            output=grid.get_pos(row,col)
+            output=grid[row][col]
             if(output!=0):
-                color=(0,0,0) if (grid.get_bold(row,col)==1) else (0,0,255)
+                color=(0,0,0) if (grid_black[row][col]==1) else (0,0,255)
                 n_text=font_bold.render(str(output), True, color)
                 screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+24, col*(grid_width//9)+18))
 
 def draw_number(row, col, n):
-    color=(0,0,0) if (grid.get_bold(row,col)==1) else (0,0,255)
+    color=(0,0,0) if (grid_black[row][col]==1) else (0,0,255)
     if(n!=0):
         n_text=font_bold.render(str(n), True, color)
         screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
-
 
 def set_cella(xy, prev_xy):
     _=draw_background()
@@ -68,10 +68,47 @@ def set_cella(xy, prev_xy):
         if((y-1)%3==0):
             offset4-=3
         pygame.draw.rect(screen, (100,200,100), pygame.Rect((grid_width/9)*x+offset1, (grid_width/9)*y+offset2, (grid_width/9)+(x+1)-offset3, (grid_width/9)+(y+1)-offset4 ))
-        draw_number(x,y, grid.get_pos(x,y))
-        return( (x, y) )
+        draw_number(x,y, grid[x][y])
+        return((x, y))
     else:
         return((-1,-1))
+
+def init_grid():
+        # self.grid=np.zeros([9,9], dtype=int)
+    grid=([[1,0,7,0,0,6,4,5,0],
+                [0,2,5,3,4,0,0,0,8],
+                [0,6,0,0,0,1,0,7,0],
+                [0,5,3,0,0,0,0,2,9],
+                [6,1,0,0,0,9,8,0,0],
+                [0,0,0,6,0,2,0,0,7],
+                [0,0,1,0,9,3,2,0,0],
+                [0,0,8,0,0,0,0,0,0],
+                [0,4,0,0,7,8,5,9,1]])
+    grid_base=([[1,0,1,0,0,1,1,1,0],
+                [0,1,1,1,1,0,0,0,1],
+                [0,1,0,0,0,1,0,1,0],
+                [0,1,1,0,0,0,0,1,1],
+                [1,1,0,0,0,1,1,0,0],
+                [0,0,0,1,0,1,0,0,1],
+                [0,0,1,0,1,1,1,0,0],
+                [0,0,1,0,0,0,0,0,0],
+                [0,1,0,0,1,1,1,1,1]])
+    
+    # grid_solved=grid.copy
+    # solve(grid_solved)
+    grid_solved=([[1,3,7,9,8,6,4,5,2],
+                    [9,2,5,3,4,7,1,6,8],
+                    [8,6,4,5,2,1,9,7,3],
+                    [7,5,3,8,1,4,6,2,9],
+                    [6,1,2,7,3,9,8,4,5],
+                    [4,8,9,6,5,2,3,1,7],
+                    [5,7,1,4,9,3,2,8,6],
+                    [2,9,8,1,6,5,7,3,4],
+                    [3,4,6,2,7,8,5,9,1]       
+                    ])
+
+    return(grid, grid_base, grid_solved)
+
 
 
 pygame.init()
@@ -82,7 +119,7 @@ pygame.font.init()
 font_bold = pygame.font.SysFont('arial', 25)
 font = pygame.font.SysFont('arial', 20)
 
-grid = SudokuGrid()
+grid, grid_black, grid_solved = init_grid()
 
 
 run  = True
@@ -98,15 +135,10 @@ while run:
             selected_cell=set_cella(pygame.mouse.get_pos(),selected_cell)
         if (event.type == pygame.KEYDOWN):
             for i in range(len(INPUTS)):
-                print("inizio for")
                 if (event.key==INPUTS[i]):
-                    print("trovato: "+str(i+1))
-                    print(selected_cell[0]!=-1)
-                    print(grid.get_pos(selected_cell[1],selected_cell[0])==0)
-                    if(selected_cell[0]!=-1 and grid.get_pos(selected_cell[0],selected_cell[1])==0):
+                    if(selected_cell[0]!=-1 and grid[selected_cell[0]][selected_cell[1]])==0:
                         draw_number(selected_cell[0],selected_cell[1], i+1)
-                        grid.set_number(selected_cell[0],selected_cell[1],i+1)
-                print('fine for')
+                        grid[selected_cell[0]][selected_cell[1]]=i+1
 
 
 
@@ -120,4 +152,3 @@ while run:
 
 pygame.quit()
 
-#TODO: quando selezioni celle consecutivamente non scrive

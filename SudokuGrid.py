@@ -131,8 +131,8 @@ class SudokuGrid:
     def get_grid(self):
         return(self.grid)
 
-    def is_correct(self, row, col, n):
-        if self.solved[row][col]
+    # def is_correct(self, row, col, n):
+    #     if self.solved[row][col]
         
         
 gr=SudokuGrid()
