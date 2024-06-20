@@ -30,17 +30,15 @@ def draw_numbers(grid_width):
         for col in range(0,9):
             output=grid.get_pos(row,col)
             if(output!=0):
-                if(grid.get_bold(row,col)==1):
-                    current_font=font_bold
-                else:
-                    current_font=font
-                n_text=current_font.render(str(output), True, (0,0,0))
-                screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
+                color=(0,0,0) if (grid.get_bold(row,col)==1) else (0,0,255)
+                n_text=font_bold.render(str(output), True, color)
+                screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+24, col*(grid_width//9)+18))
 
-def draw_number(row, col, n, input):
-    current_font=font_bold if (grid.get_bold(row,col)==1) else font
+def draw_number(row, col, n):
+    # current_font=font_bold if (grid.get_bold(row,col)==1) else font
+    color=(0,0,0) if (grid.get_bold(row,col)==1) else (0,0,255)
     if(n!=0):
-        n_text=current_font.render(str(n), True, (0,0,0))
+        n_text=font_bold.render(str(n), True, color)
         screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+25, col*(grid_width//9)+21))
 
 
@@ -57,7 +55,6 @@ def set_cella(xy, prev_xy):
     #     pygame.draw.rect(screen, (255,0,0), pygame.Rect(x*(w//9), y*(w//9), (x+1)*(w//9), (y+1)*(w//9)))
     #     print(str(x*(w//9))+" " + str(y*(w//9)) + " " + str((x+1)*(w//9)) + " " + str((y+1)*(w//9)))
     if(prev_xy[0]==x and prev_xy[1]==y):
-        print("reset")
         _=draw_background()
         return((-1,-1))
     
@@ -86,8 +83,8 @@ def set_cella(xy, prev_xy):
 
 
 
-        pygame.draw.rect(screen, (100,100,200), pygame.Rect((grid_width/9)*x+offset1, (grid_width/9)*y+offset2, (grid_width/9)+(x+1)-offset3, (grid_width/9)+(y+1)-offset4 ))
-        draw_number(x,y, grid.get_pos(x,y), False)
+        pygame.draw.rect(screen, (100,200,100), pygame.Rect((grid_width/9)*x+offset1, (grid_width/9)*y+offset2, (grid_width/9)+(x+1)-offset3, (grid_width/9)+(y+1)-offset4 ))
+        draw_number(x,y, grid.get_pos(x,y))
         # print(grid_width)
         # print((grid_width/9)*x+12)
         # print((grid_width/9)*y+12)
@@ -122,10 +119,15 @@ while run:
             selected_cell=set_cella(pygame.mouse.get_pos(),selected_cell)
         if (event.type == pygame.KEYDOWN):
             for i in range(len(INPUTS)):
+                print("inizio for")
                 if (event.key==INPUTS[i]):
-                    if(selected_cell[0]!=-1 and grid.get_pos(selected_cell[1],selected_cell[0])==0):
-                        draw_number(selected_cell[0],selected_cell[1], i+1, True)
+                    print("trovato: "+str(i+1))
+                    print(selected_cell[0]!=-1)
+                    print(grid.get_pos(selected_cell[1],selected_cell[0])==0)
+                    if(selected_cell[0]!=-1 and grid.get_pos(selected_cell[0],selected_cell[1])==0):
+                        draw_number(selected_cell[0],selected_cell[1], i+1)
                         grid.set_number(selected_cell[0],selected_cell[1],i+1)
+                print('fine for')
 
 
 

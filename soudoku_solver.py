@@ -35,7 +35,6 @@ def find_empty(grid):
     return None
 
 def solve(grid):
-    
     find = find_empty(grid)
     if not find:
         return True
@@ -65,7 +64,6 @@ def print_grid(grid):
         print()    
     print() 
         
-            
 
     
 print_grid(grid)
