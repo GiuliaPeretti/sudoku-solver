@@ -37,21 +37,20 @@ def find_empty(grid):
 def solve(grid):
     find = find_empty(grid)
     if not find:
-        return True
+        return (True, grid)
     else:
         x, y = find
     
     for i in range(1,10):
         if(is_possible(grid,x,y,i)):
-            print(str(i)+" possibile")
             grid[y][x] = i
-            if solve(grid):
+            b,grid=solve(grid)
+            if b:
                 print("finito")
-                return True
+                return (True, grid)
             
             grid[y][x] = 0
-    print("return false " +str(x)+" "+str(y))
-    return False
+    return (False, grid)
 
 def print_grid(grid):
     for i in range (0,9):
