@@ -35,7 +35,6 @@ def draw_numbers(grid_width):
                 screen.blit(n_text, pygame.Vector2(row*(grid_width//9)+24, col*(grid_width//9)+18))
 
 def draw_number(row, col, n):
-    # current_font=font_bold if (grid.get_bold(row,col)==1) else font
     color=(0,0,0) if (grid.get_bold(row,col)==1) else (0,0,255)
     if(n!=0):
         n_text=font_bold.render(str(n), True, color)
@@ -48,17 +47,11 @@ def set_cella(xy, prev_xy):
     y=xy[1]
     x= int(x//(grid_width/9))
     y = int(y//(grid_width/9))
-    # if (x<=w and y<=w):
-    #     x=x//(w/9)
-    #     y=y//(w/9)
-    #     print(str(x)+" "+str(y))
-    #     pygame.draw.rect(screen, (255,0,0), pygame.Rect(x*(w//9), y*(w//9), (x+1)*(w//9), (y+1)*(w//9)))
-    #     print(str(x*(w//9))+" " + str(y*(w//9)) + " " + str((x+1)*(w//9)) + " " + str((y+1)*(w//9)))
+
     if(prev_xy[0]==x and prev_xy[1]==y):
         _=draw_background()
         return((-1,-1))
     
-
     if (x<=grid_width and y<=grid_width):
         offset1=10
         offset2=10
@@ -70,26 +63,12 @@ def set_cella(xy, prev_xy):
         if(y%3==0):
             offset2+=1
             offset4-=2
-
-        if((x+1)%3==0):
-            offset3+=0
-        if((y+1)%3==0):
-            offset4+=0
-        
-        # print("offset1 "+str(offset1))
-        # print("offset2 "+str(offset2))
-        # print("offset3 "+str(offset3))
-        # print("offset4 "+str(offset4))
-
-
-
+        if((x-1)%3==0):
+            offset3-=3
+        if((y-1)%3==0):
+            offset4-=3
         pygame.draw.rect(screen, (100,200,100), pygame.Rect((grid_width/9)*x+offset1, (grid_width/9)*y+offset2, (grid_width/9)+(x+1)-offset3, (grid_width/9)+(y+1)-offset4 ))
         draw_number(x,y, grid.get_pos(x,y))
-        # print(grid_width)
-        # print((grid_width/9)*x+12)
-        # print((grid_width/9)*y+12)
-        # print((grid_width/9)+(x+1))
-        # print((grid_width/9)+(y+1))
         return( (x, y) )
     else:
         return((-1,-1))

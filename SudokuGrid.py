@@ -21,8 +21,20 @@ class SudokuGrid:
                     [0,0,1,0,1,1,1,0,0],
                     [0,0,1,0,0,0,0,0,0],
                     [0,1,0,0,1,1,1,1,1]])
+        self.solved=([[1,3,7,9,8,6,4,5,2],
+                      [9,2,5,3,4,7,1,6,8],
+                      [8,6,4,5,2,1,9,7,3],
+                      [7,5,3,8,1,4,6,2,9],
+                      [6,1,2,7,3,9,8,4,5],
+                      [4,8,9,6,5,2,3,1,7],
+                      [5,7,1,4,9,3,2,8,6],
+                      [2,9,8,1,6,5,7,3,4],
+                      [3,4,6,2,7,8,5,9,1]       
+                      ])
+
+
         self.solved=self.grid.copy()
-        self.solve(0,0)
+        self.solved=self.solve(self.solved, 0, 0)[1]
         
 
     def print_grid(self, g):
@@ -51,23 +63,22 @@ class SudokuGrid:
     def get_solved(self):
         return(self.solved)
     
-    def solve(self, row, col):
+    def solve(self, solved, row, col):
         if row==9:
-            return True
+            return (True, solved)
         elif col==9:
-            return self.solve(row+1,0)
-        elif self.solved[row][col] != 0:
-            return self.solve(row, col+1)
+            return self.solve(solved, row+1,0)
+        elif solved[row][col] != 0:
+            return self.solve(solved, row, col+1)
         else:
             for k in range(1,10):
-                if self.is_possible(self.solved,row, col, k):
-                    self.solved[row][col] = k
-                    print(self.solved[row][col])
-                    if self.solve(row, col+1):
-                        return True
-                    self.solved[row][col]=0
-                    print(self.solved[row][col])
-            return False
+                if self.is_possible(solved, row, col, k):
+                    solved[row][col] = k
+                    if self.solve(solved, row, col+1)[0]:
+                        return (True, solved)
+                    solved[row][col]=0
+            return (False, solved)
+
                 
 
         
@@ -120,6 +131,9 @@ class SudokuGrid:
     def get_grid(self):
         return(self.grid)
 
+    def is_correct(self, row, col, n):
+        if self.solved[row][col]
+        
         
 gr=SudokuGrid()
 print(gr.get_solved())
