@@ -84,6 +84,7 @@ def set_cella(xy, prev_xy):
         return((-1,-1))
 
 def init_grid():
+    
     grid=generate_grid()
     print_grid(grid)
     # grid=[[1,0,7,0,0,6,4,5,0],
@@ -135,11 +136,12 @@ def init_grid():
 
 def generate_grid():
     size=9
-    grid=[]
+    grid=np.zeros([9,9], dtype=int)
     for r in range (size):
         row=[]
+        c=0
         numbers=list(range(1,size+1))
-        while len(row)!=size:
+        while c!=size:
             number=random.choice(numbers)
             repeat_counter=0
             while (is_possible(grid, r, len(row), number)==False):
@@ -148,8 +150,8 @@ def generate_grid():
                 if repeat_counter==size:
                     break
             else:
-                row.append(number)
-        grid.append(row)
+                grid[r][c]=number
+                c+=1
     return(grid)
 
 
