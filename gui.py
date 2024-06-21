@@ -39,18 +39,26 @@ def draw_numbers(grid_width):
                     screen.blit(n_text, (col*(grid_width//9)+24, row*(grid_width//9)+18))
 
 def draw_number(row, col, n):
+    draw_green_square(row,col)
     if (grid_bold[row][col]==1):
         color=(0,0,0)
     elif (not(is_correct(row,col,n))):
         color=(255,0,0)
     else:
         color=(0,0,255)
+
     if(n!=0):
         n_text=font.render(str(n), True, color)
         screen.blit(n_text, (col*(grid_width//9)+24, row*(grid_width//9)+18))
         grid[row][col]=n
         if(check_victory()):
             print("Victory")
+            vic_font = pygame.font.SysFont('arial', 30)
+            n_text=vic_font.render("Victory!", True, (0,0,0))
+            screen.blit(n_text, (450, 250))
+        else:
+            pygame.draw.rect(screen, BACKGROUND_COLOR, pygame.Rect(450, 250, SCREEN_WIDTH-450, SCREEN_HEIGHT-250))
+
 
 def draw_button():
     x1,y1,w,h=SCREEN_WIDTH-50-110, 9, 120, 30
@@ -92,6 +100,23 @@ def draw_button():
 
     return(b_easy,b_medium,b_difficult,b_generate)
 
+def draw_green_square(row,col):
+    offset1=10
+    offset2=10
+    offset3=col+5-(col%3)
+    offset4=row+5-(row%3)
+    if(col%3==0):
+        offset1+=1
+        offset3-=2
+    if(row%3==0):
+        offset2+=1
+        offset4-=2
+    if((col-1)%3==0):
+        offset3-=3
+    if((row-1)%3==0):
+        offset4-=3
+    pygame.draw.rect(screen, (100,200,100), pygame.Rect((grid_width/9)*col+offset1, (grid_width/9)*row+offset2, (grid_width/9)+(col+1)-offset3, (grid_width/9)+(row+1)-offset4 ))
+
 def set_cella(xy, prev_xy):
     if(grid is not None):
         _=draw_background()
@@ -109,21 +134,7 @@ def set_cella(xy, prev_xy):
             return(-1,-1)
         
         if (col<=grid_width and row<=grid_width):
-            offset1=10
-            offset2=10
-            offset3=col+5-(col%3)
-            offset4=row+5-(row%3)
-            if(col%3==0):
-                offset1+=1
-                offset3-=2
-            if(row%3==0):
-                offset2+=1
-                offset4-=2
-            if((col-1)%3==0):
-                offset3-=3
-            if((row-1)%3==0):
-                offset4-=3
-            pygame.draw.rect(screen, (100,200,100), pygame.Rect((grid_width/9)*col+offset1, (grid_width/9)*row+offset2, (grid_width/9)+(col+1)-offset3, (grid_width/9)+(row+1)-offset4 ))
+            draw_green_square(row,col)
             draw_number(row, col, grid[row][col])
             return(row, col)
         else:
@@ -189,7 +200,6 @@ def print_grid(grid):
         print()    
     print() 
 
-
 def select_difficulty(xy,s):
     draw_button()
     if(xy is not None):
@@ -214,44 +224,28 @@ def check_victory():
     row=0
     while(row<9 and correct==True):
         col=0
-        print("row")
-        print(row)
         while (col<9 and correct==True):
-            print("col")
-            print(col)
             if(grid[row][col]==0 or is_correct(row, col, grid[row][col])==False):
-                print("Non va bene "+ str(row)+str(col))
-                print(grid[row][col])
-                print(is_correct(row, col, grid[row][col]) )
                 correct=False
             col+=1
         row+=1
     return correct
 
-
 def is_correct(row, col, n):
     for i in range (0,9):
-        if (i!=row and grid[row][i] == n):
-            print("stessa riga")
+        if (i!=col and grid[row][i] == n):
             return False
     for i in range (0,9):
-        if (i!=col and grid[i][col] == n):
-            print("stessa colonna")
+        if (i!=row and grid[i][col] == n):
             return False
-    col = (col//3)
-    row = (col//3)
+    col0 = (col//3)*3+1
+    row0 = (row//3)*3+1
 
-    for i in range(0,3):
-        for j in range(0,3):
-            if(col+i>=0 and col+i<=8 and row+j>=0 and row+j<=8):
-                if (grid[col+i][row+j] == n):
-                    print("quadrato")
-                    return False
+    for i in range(-1,2):
+        for j in range(-1,2):
+            if (grid[row0+i][col0+j] == n and col0+j!=col and row0+i!=row):
+                return False
     return True
-
-
-
-            
 
 
 
@@ -281,15 +275,15 @@ while run:
             elif(x>b_easy[0][0] and x<=b_easy[0][1] and y>=b_easy[1][0] and y<=b_easy[1][1]):
                 print("easy")
                 select_difficulty(b_easy,"Easy")
-                difficulty=1
+                difficulty=20
             elif(x>b_medium[0][0] and x<=b_medium[0][1] and y>=b_medium[1][0] and y<=b_medium[1][1]):
                 print("medium")
                 select_difficulty(b_medium,"Medium")
-                difficulty=40
+                difficulty=30
             elif(x>b_difficult[0][0] and x<=b_difficult[0][1] and y>=b_difficult[1][0] and y<=b_difficult[1][1]):
                 print("difficult")
                 select_difficulty(b_difficult,"Difficult")
-                difficulty=60
+                difficulty=40
             elif(x>b_generate[0][0] and x<=b_generate[0][1] and y>=b_generate[1][0] and y<=b_generate[1][1]):
                 print("generate_new")
                 grid, grid_bold, grid_solved = init_grid(difficulty)
@@ -302,7 +296,7 @@ while run:
         if (event.type == pygame.KEYDOWN):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
-                    if(selected_cell[0]!=-1 and grid[selected_cell[0]][selected_cell[1]])==0:
+                    if(selected_cell[0]!=-1 and (grid[selected_cell[0]][selected_cell[1]]==0 or grid_bold[selected_cell[0]][selected_cell[1]]==0)):
                         draw_number(selected_cell[0],selected_cell[1], i+1)
                     
 
