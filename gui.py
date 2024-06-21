@@ -1,8 +1,8 @@
 import pygame
 from settings import *
-from sudoku_solver import *
 from random import sample
 import random 
+import copy
 
 def draw_background():
     screen.fill((200,200,200))
@@ -47,6 +47,46 @@ def draw_number(row, col, n):
         n_text=font.render(str(n), True, color)
         screen.blit(n_text, (col*(grid_width//9)+24, row*(grid_width//9)+18))
 
+def draw_button():
+    x1,y1,w,h=SCREEN_WIDTH-50-110, 9, 95, 30
+    pygame.draw.rect(screen, (200,200,200), (x1,y1,w,h))
+    pygame.draw.rect(screen, (0,0,0), (x1,y1,w,h), 2)
+
+    font = pygame.font.SysFont('arial', 17)
+    text=font.render(str("Easy"), True, (0,0,0))
+    screen.blit(text, (x1+27, y1+5))
+
+    b_easy=((x1,x1+w),(y1,y1+h))
+
+    y1=y1+h+10
+    pygame.draw.rect(screen, (200,200,200), (x1,y1,w,h))
+    pygame.draw.rect(screen, (0,0,0), (x1,y1,w,h), 2)
+
+    text=font.render(str("Medium"), True, (0,0,0))
+    screen.blit(text, (x1+20, y1+5))
+
+    b_medium=((x1,x1+w),(y1,y1+h))
+
+    y1=y1+h+10
+    pygame.draw.rect(screen, (200,200,200), (x1,y1,w,h))
+    pygame.draw.rect(screen, (0,0,0), (x1,y1,w,h), 2)
+
+    text=font.render(str("Difficult"), True, (0,0,0))
+    screen.blit(text, (x1+20, y1+5))
+
+    b_difficult=((x1,x1+w),(y1,y1+h))
+
+    y1=y1+h+10
+    pygame.draw.rect(screen, (200,200,200), (x1,y1,w,h))
+    pygame.draw.rect(screen, (0,0,0), (x1,y1,w,h), 2)
+
+    text=font.render(str("Generate new"), True, (0,0,0))
+    screen.blit(text, (x1+9, y1+5))
+
+    b_generate=((x1,x1+w),(y1,y1+h))
+
+    return(b_easy,b_medium,b_difficult,b_generate)
+
 def set_cella(xy, prev_xy):
     _=draw_background()
     col=xy[0]
@@ -83,78 +123,61 @@ def set_cella(xy, prev_xy):
     else:
         return((-1,-1))
 
-def init_grid():
-    
-    grid=generate_grid()
-    print_grid(grid)
-    # grid=[[1,0,7,0,0,6,4,5,0],
-    #             [0,2,5,3,4,0,0,0,8],
-    #             [0,6,0,0,0,1,0,7,0],
-    #             [0,5,3,0,0,0,0,2,9],
-    #             [6,1,0,0,0,9,8,0,0],
-    #             [0,0,0,6,0,2,0,0,7],
-    #             [0,0,1,0,9,3,2,0,0],
-    #             [0,0,8,0,0,0,0,0,0],
-    #             [0,4,0,0,7,8,5,9,1]]
-    
-    # grid=[[1,3,7,9,8,6,4,5,2],
-    #             [9,0,5,3,0,7,1,0,8],
-    #             [8,6,4,5,2,1,9,7,3],
-    #             [7,5,3,8,1,4,6,2,9],
-    #             [6,0,2,7,0,9,8,0,5],
-    #             [4,8,9,6,5,2,3,1,7],
-    #             [5,7,1,4,9,3,2,8,6],
-    #             [2,0,8,1,0,5,7,0,4],
-    #             [3,4,6,2,7,8,5,9,1]       
-    #             ]
+def init_grid():    
+    grid_solved=generate_grid()
+    grid=playble_grid(grid_solved,10)
+    grid_bold=generate_bold(grid)
+    return(grid, grid_bold, grid_solved)
 
+def generate_bold(grid):
+    grid_bold=copy.deepcopy(grid)
+    for r in range (9):
+        for c in range (9):
+            if (grid_bold[r][c]!=0):
+                grid_bold[r][c]=1
+            else:
+                grid_bold[r][c]=0
+    return(grid_bold)
 
-    grid_base=[[1,0,1,0,0,1,1,1,0],
-                [0,1,1,1,1,0,0,0,1],
-                [0,1,0,0,0,1,0,1,0],
-                [0,1,1,0,0,0,0,1,1],
-                [1,1,0,0,0,1,1,0,0],
-                [0,0,0,1,0,1,0,0,1],
-                [0,0,1,0,1,1,1,0,0],
-                [0,0,1,0,0,0,0,0,0],
-                [0,1,0,0,1,1,1,1,1]]
-    
-    # grid_solved=grid.copy
-    _,grid_solved=solve(grid)
-    grid_solved=[[1,3,7,9,8,6,4,5,2],
-                    [9,2,5,3,4,7,1,6,8],
-                    [8,6,4,5,2,1,9,7,3],
-                    [7,5,3,8,1,4,6,2,9],
-                    [6,1,2,7,3,9,8,4,5],
-                    [4,8,9,6,5,2,3,1,7],
-                    [5,7,1,4,9,3,2,8,6],
-                    [2,9,8,1,6,5,7,3,4],
-                    [3,4,6,2,7,8,5,9,1]       
-                    ]
-
-    return(grid, grid_base, grid_solved)
+def playble_grid(grid_solved, n):
+    grid=copy.deepcopy(grid_solved)
+    c=0
+    while c<n:
+        row=random.randint(0,8)
+        col=random.randint(0,8)
+        if (grid[row][col]!=0):
+            grid[row][col]=0
+            c+=1
+    return grid
 
 def generate_grid():
-    size=9
-    grid=np.zeros([9,9], dtype=int)
-    for r in range (size):
-        row=[]
-        c=0
-        numbers=list(range(1,size+1))
-        while c!=size:
-            number=random.choice(numbers)
-            repeat_counter=0
-            while (is_possible(grid, r, len(row), number)==False):
-                number=random.choice(numbers)
-                repeat_counter+=1
-                if repeat_counter==size:
-                    break
-            else:
-                grid[r][c]=number
-                c+=1
-    return(grid)
+    base  = 3
+    side  = base*base
+    rBase = range(base) 
+    rows  = [ g*base + r for g in shuffle(rBase) for r in shuffle(rBase) ] 
+    cols  = [ g*base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
+    nums  = shuffle(range(1,base*base+1))
+    board = [ [nums[pattern(r,c)] for c in cols] for r in rows ]
+    return(board)
 
+def pattern(r,c): 
+    base  = 3
+    side  = base*base
+    return (base*(r%base)+r//base+c)%side
 
+# randomize rows, columns and numbers (of valid base pattern)
+def shuffle(s): return sample(s,len(s)) 
+
+def print_grid(grid):
+    for i in range (0,9):
+        if ((i)%3==0 and i!=0):
+            print("------+-------+------")
+        for j in range (0,9):
+            print(grid[i][j], end=' ')
+            if ((j+1)%3==0 and j!=8):
+                print("|", end=' ')
+        print()    
+    print() 
 
             
 
@@ -168,6 +191,12 @@ pygame.display.set_caption('Sudoku♥')
 font = pygame.font.SysFont('arial', 25)
 
 grid, grid_black, grid_solved = init_grid()
+print("grid")
+print_grid(grid)
+print("grid_black")
+print_grid(grid_black)
+print("grid_solved")
+print_grid(grid_solved)
 
 print_grid(grid_solved)
 
@@ -175,7 +204,7 @@ print_grid(grid_solved)
 run  = True
 grid_width=draw_background()
 selected_cell=(-1,-1)
-
+b_easy,b_medium,b_difficult,b_generate=draw_button()
 while run:
 
     for event in pygame.event.get():

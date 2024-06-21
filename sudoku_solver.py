@@ -1,5 +1,6 @@
 import numpy as np
-import random
+from random import sample
+
 
 grid=([[1,0,7,0,0,6,4,5,0],
       [0,2,5,3,4,0,0,0,8],
@@ -115,27 +116,26 @@ def init_grid():
     return(grid, grid_base, grid_solved)
 
 def generate_grid():
-    size=9
-    grid=np.zeros([9,9], dtype=int)
-    for r in range (size):
-        row=[]
-        c=0
-        numbers=list(range(1,size+1))
-        while c!=size:
-            number=random.choice(numbers)
-            repeat_counter=0
-            while (is_possible(grid, r, len(row), number)==False):
-                number=random.choice(numbers)
-                repeat_counter+=1
-                if repeat_counter==size:
-                    break
-            else:
-                grid[r][c]=number
-                c+=1
-    return(grid)
+    base  = 3
+    side  = base*base
+    rBase = range(base) 
+    rows  = [ g*base + r for g in shuffle(rBase) for r in shuffle(rBase) ] 
+    cols  = [ g*base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
+    nums  = shuffle(range(1,base*base+1))
+    board = [ [nums[pattern(r,c)] for c in cols] for r in rows ]
+    return(board)
+
+def pattern(r,c): 
+    base  = 3
+    side  = base*base
+    return (base*(r%base)+r//base+c)%side
+
+# randomize rows, columns and numbers (of valid base pattern)
+def shuffle(s): return sample(s,len(s)) 
+
 
 
 #   grid[row][col]=0         
 
-grid=[[0]*9]*9    
+grid=generate_grid()  
 print_grid(grid)
