@@ -41,13 +41,16 @@ def draw_numbers(grid_width):
 def draw_number(row, col, n):
     if (grid_bold[row][col]==1):
         color=(0,0,0)
-    elif (grid_solved[row][col]!=n):
+    elif (not(is_correct(row,col,n))):
         color=(255,0,0)
     else:
         color=(0,0,255)
     if(n!=0):
         n_text=font.render(str(n), True, color)
         screen.blit(n_text, (col*(grid_width//9)+24, row*(grid_width//9)+18))
+        grid[row][col]=n
+        if(check_victory()):
+            print("Victory")
 
 def draw_button():
     x1,y1,w,h=SCREEN_WIDTH-50-110, 9, 120, 30
@@ -190,7 +193,6 @@ def print_grid(grid):
 def select_difficulty(xy,s):
     draw_button()
     if(xy is not None):
-        print(xy)
         x1,y1,w,h=xy[0][0], xy[1][0], 120, 30
         pygame.draw.rect(screen, (250,100,150), (x1,y1,w,h))
         pygame.draw.rect(screen, (0,0,0), (x1,y1,w,h), 2)
@@ -206,6 +208,49 @@ def select_difficulty(xy,s):
         font = pygame.font.SysFont('arial', 17)
         text=font.render(s, True, (0,0,0))
         screen.blit(text, (x1+offset, y1+5))
+
+def check_victory():
+    correct=True
+    row=0
+    while(row<9 and correct==True):
+        col=0
+        print("row")
+        print(row)
+        while (col<9 and correct==True):
+            print("col")
+            print(col)
+            if(grid[row][col]==0 or is_correct(row, col, grid[row][col])==False):
+                print("Non va bene "+ str(row)+str(col))
+                print(grid[row][col])
+                print(is_correct(row, col, grid[row][col]) )
+                correct=False
+            col+=1
+        row+=1
+    return correct
+
+
+def is_correct(row, col, n):
+    for i in range (0,9):
+        if (i!=row and grid[row][i] == n):
+            print("stessa riga")
+            return False
+    for i in range (0,9):
+        if (i!=col and grid[i][col] == n):
+            print("stessa colonna")
+            return False
+    col = (col//3)
+    row = (col//3)
+
+    for i in range(0,3):
+        for j in range(0,3):
+            if(col+i>=0 and col+i<=8 and row+j>=0 and row+j<=8):
+                if (grid[col+i][row+j] == n):
+                    print("quadrato")
+                    return False
+    return True
+
+
+
             
 
 
@@ -232,14 +277,11 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y=pygame.mouse.get_pos()
             if(x<grid_width and y<grid_width):
-                print(selected_cell)
                 selected_cell=set_cella(pygame.mouse.get_pos(),selected_cell)
-                print("Cella selezionate:")
-                print(selected_cell)
             elif(x>b_easy[0][0] and x<=b_easy[0][1] and y>=b_easy[1][0] and y<=b_easy[1][1]):
                 print("easy")
                 select_difficulty(b_easy,"Easy")
-                difficulty=20
+                difficulty=1
             elif(x>b_medium[0][0] and x<=b_medium[0][1] and y>=b_medium[1][0] and y<=b_medium[1][1]):
                 print("medium")
                 select_difficulty(b_medium,"Medium")
@@ -262,7 +304,6 @@ while run:
                 if (event.key==INPUTS[i]):
                     if(selected_cell[0]!=-1 and grid[selected_cell[0]][selected_cell[1]])==0:
                         draw_number(selected_cell[0],selected_cell[1], i+1)
-                        grid[selected_cell[0]][selected_cell[1]]=i+1
                     
 
     pygame.display.flip()
